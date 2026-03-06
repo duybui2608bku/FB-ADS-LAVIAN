@@ -1,6 +1,28 @@
 "use client"
 
 import { PlatformStats, formatVND, formatNumber, costPerInteraction } from "@/lib/process-insights"
+import type { Lang } from "@/components/dashboard"
+
+const dict = {
+  vi: {
+    platform: "Nền Tảng",
+    spend: "Chi Tiêu",
+    spendPct: "% Chi Tiêu",
+    interactions: "Tương Tác",
+    cpi: "Chi Phí / TT",
+    total: "Tổng Cộng",
+    noData: "Không có dữ liệu",
+  },
+  en: {
+    platform: "Platform",
+    spend: "Spend",
+    spendPct: "% Spend",
+    interactions: "Interactions",
+    cpi: "Cost / Int",
+    total: "Total",
+    noData: "No data",
+  },
+}
 
 const PLATFORM_ICONS: Record<string, string> = {
   Facebook: "FB",
@@ -12,13 +34,16 @@ const PLATFORM_ICONS: Record<string, string> = {
 interface PlatformTableProps {
   data: PlatformStats[]
   totalSpend: number
+  lang: Lang
 }
 
-export function PlatformTable({ data, totalSpend }: PlatformTableProps) {
+export function PlatformTable({ data, totalSpend, lang }: PlatformTableProps) {
+  const t = dict[lang]
+
   if (data.length === 0) {
     return (
       <div className="border p-10 text-center text-xs font-mono text-muted-foreground uppercase tracking-widest">
-        Không có dữ liệu
+        {t.noData}
       </div>
     )
   }
@@ -29,12 +54,11 @@ export function PlatformTable({ data, totalSpend }: PlatformTableProps) {
         <table className="w-full text-sm font-mono">
           <thead>
             <tr className="bg-foreground text-background">
-              <th className="text-left px-4 py-3 text-xs uppercase tracking-widest font-normal">Nền Tảng</th>
-              {/* <th className="text-right px-4 py-3 text-xs uppercase tracking-widest font-normal">Chiến Dịch</th> */}
-              <th className="text-right px-4 py-3 text-xs uppercase tracking-widest font-normal">Chi Tiêu</th>
-              <th className="text-right px-4 py-3 text-xs uppercase tracking-widest font-normal hidden md:table-cell">% Chi Tiêu</th>
-              <th className="text-right px-4 py-3 text-xs uppercase tracking-widest font-normal">Tương Tác</th>
-              <th className="text-right px-4 py-3 text-xs uppercase tracking-widest font-normal hidden lg:table-cell">Chi Phí / TT</th>
+              <th className="text-left px-4 py-3 text-xs uppercase tracking-widest font-normal">{t.platform}</th>
+              <th className="text-right px-4 py-3 text-xs uppercase tracking-widest font-normal">{t.spend}</th>
+              <th className="text-right px-4 py-3 text-xs uppercase tracking-widest font-normal hidden md:table-cell">{t.spendPct}</th>
+              <th className="text-right px-4 py-3 text-xs uppercase tracking-widest font-normal">{t.interactions}</th>
+              <th className="text-right px-4 py-3 text-xs uppercase tracking-widest font-normal hidden lg:table-cell">{t.cpi}</th>
             </tr>
           </thead>
           <tbody>
@@ -57,7 +81,6 @@ export function PlatformTable({ data, totalSpend }: PlatformTableProps) {
                       </div>
                     </div>
                   </td>
-                  {/* <td className="px-4 py-3 text-right tabular-nums">{formatNumber(row.campaigns)}</td> */}
                   <td className="px-4 py-3 text-right tabular-nums font-semibold">{formatVND(row.spend)}</td>
                   <td className="px-4 py-3 text-right hidden md:table-cell">
                     <div className="flex items-center justify-end gap-2">
@@ -80,10 +103,7 @@ export function PlatformTable({ data, totalSpend }: PlatformTableProps) {
           </tbody>
           <tfoot>
             <tr className="border-t bg-muted/30 font-semibold">
-              <td className="px-4 py-3 text-xs uppercase tracking-widest">Tổng Cộng</td>
-              {/* <td className="px-4 py-3 text-right tabular-nums">
-                {formatNumber(data.reduce((s, r) => s + r.campaigns, 0))}
-              </td> */}
+              <td className="px-4 py-3 text-xs uppercase tracking-widest">{t.total}</td>
               <td className="px-4 py-3 text-right tabular-nums">{formatVND(totalSpend)}</td>
               <td className="px-4 py-3 hidden md:table-cell" />
               <td className="px-4 py-3 text-right tabular-nums">

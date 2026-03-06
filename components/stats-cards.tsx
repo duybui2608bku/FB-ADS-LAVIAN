@@ -2,6 +2,30 @@
 
 import { TrendingUp, MessageCircle, DollarSign, BarChart3 } from "lucide-react"
 import { formatVND, formatNumber } from "@/lib/process-insights"
+import type { Lang } from "@/components/dashboard"
+
+const dict = {
+  vi: {
+    totalSpend: "Tổng Chi Tiêu",
+    totalInteractions: "Tổng Tương Tác",
+    cpi: "Chi Phí / Tương Tác",
+    totalCampaigns: "Tổng Chiến Dịch",
+    platforms: (n: number) => `${n} nền tảng`,
+    convStarted: "conversation started 7d",
+    costPerInt: "cost per interaction",
+    campaignsInPeriod: "campaigns trong kỳ",
+  },
+  en: {
+    totalSpend: "Total Spend",
+    totalInteractions: "Total Interactions",
+    cpi: "Cost / Interaction",
+    totalCampaigns: "Total Campaigns",
+    platforms: (n: number) => `${n} platform${n > 1 ? "s" : ""}`,
+    convStarted: "conversation started 7d",
+    costPerInt: "cost per interaction",
+    campaignsInPeriod: "campaigns in period",
+  },
+}
 
 interface StatCardProps {
   title: string
@@ -14,9 +38,8 @@ interface StatCardProps {
 function StatCard({ title, value, sub, icon, highlight }: StatCardProps) {
   return (
     <div
-      className={`relative border rounded-none p-5 flex flex-col gap-3 ${
-        highlight ? "bg-foreground text-background" : "bg-background text-foreground"
-      }`}
+      className={`relative border rounded-none p-5 flex flex-col gap-3 ${highlight ? "bg-foreground text-background" : "bg-background text-foreground"
+        }`}
     >
       <div className="flex items-center justify-between">
         <span className="text-xs font-mono uppercase tracking-widest opacity-60">{title}</span>
@@ -37,36 +60,38 @@ interface StatsCardsProps {
   totalInteractions: number
   platformCount: number
   campaignCount: number
+  lang: Lang
 }
 
-export function StatsCards({ totalSpend, totalInteractions, platformCount, campaignCount }: StatsCardsProps) {
+export function StatsCards({ totalSpend, totalInteractions, platformCount, campaignCount, lang }: StatsCardsProps) {
   const cpi = totalInteractions > 0 ? totalSpend / totalInteractions : 0
+  const t = dict[lang]
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-px border bg-border">
       <StatCard
-        title="Tổng Chi Tiêu"
+        title={t.totalSpend}
         value={formatVND(totalSpend)}
-        sub={`${platformCount} nền tảng`}
+        sub={t.platforms(platformCount)}
         icon={<DollarSign className="h-4 w-4" />}
         highlight
       />
       <StatCard
-        title="Tổng Tương Tác"
+        title={t.totalInteractions}
         value={formatNumber(totalInteractions)}
-        sub="conversation started 7d"
+        sub={t.convStarted}
         icon={<MessageCircle className="h-4 w-4" />}
       />
       <StatCard
-        title="Chi Phí / Tương Tác"
+        title={t.cpi}
         value={formatVND(cpi)}
-        sub="cost per interaction"
+        sub={t.costPerInt}
         icon={<TrendingUp className="h-4 w-4" />}
       />
       <StatCard
-        title="Tổng Chiến Dịch"
+        title={t.totalCampaigns}
         value={formatNumber(campaignCount)}
-        sub="campaigns trong kỳ"
+        sub={t.campaignsInPeriod}
         icon={<BarChart3 className="h-4 w-4" />}
       />
     </div>
