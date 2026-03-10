@@ -21,6 +21,11 @@ export interface FetchInsightsParams {
   endDate: string
 }
 
+const AD_ACCOUNT_IDS = [
+  "act_1494701561142295",
+  "act_1560209974756985",
+]
+
 export async function fetchInsights({
   startDate,
   endDate,
@@ -34,19 +39,26 @@ export async function fetchInsights({
   const date = `time_range={"since":"${startDate}","until":"${endDate}"}`
   const filtering = `[{"field":"action_type","operator":"CONTAIN","value":"onsite_conversion.messaging_conversation_started_7d"}]`
 
-  const url =
-    `https://graph.facebook.com/v25.0/act_1494701561142295/insights?fields=spend,campaign_id,account_name,campaign_name,actions` +
-    `&level=campaign&${date}&filtering=${encodeURIComponent(filtering)}&limit=5000&access_token=${accessToken}`
-
   try {
-    const res = await fetch(url, { cache: "no-store" })
-    const json: FBApiResponse = await res.json()
+    const results = await Promise.all(
+      AD_ACCOUNT_IDS.map(async (accountId) => {
+        const url =
+          `https://graph.facebook.com/v25.0/${accountId}/insights?fields=spend,campaign_id,account_name,campaign_name,actions` +
+          `&level=campaign&${date}&filtering=${encodeURIComponent(filtering)}&limit=5000&access_token=${accessToken}`
 
-    if (json.error) {
-      return { data: null, error: json.error.message }
-    }
+        const res = await fetch(url, { cache: "no-store" })
+        const json: FBApiResponse = await res.json()
 
-    return { data: json.data ?? [], error: null }
+        if (json.error) {
+          throw new Error(`Account ${accountId}: ${json.error.message}`)
+        }
+
+        return json.data ?? []
+      })
+    )
+
+    const mergedData = results.flat()
+    return { data: mergedData, error: null }
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error"
     return { data: null, error: msg }
