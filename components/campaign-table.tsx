@@ -37,6 +37,7 @@ const dict = {
     interactions: "Tương Tác",
     status: "Trạng Thái",
     toggle: "Bật/Tắt",
+    account: "Tài Khoản",
     noData: "Không có dữ liệu chiến dịch",
   },
   en: {
@@ -46,6 +47,7 @@ const dict = {
     interactions: "Interactions",
     status: "Status",
     toggle: "Toggle",
+    account: "Account",
     noData: "No campaign data",
   },
 }
@@ -123,6 +125,10 @@ function CampaignRow({ row, lang }: CampaignRowProps) {
       <td className="px-4 py-3 text-right tabular-nums font-mono text-sm">
         {formatNumber(parseInt(actionValue, 10) || 0)}
       </td>
+
+      <td className="px-4 py-3 text-sm text-muted-foreground">
+        {row.account_name ?? "—"}
+      </td>
     </tr>
   )
 }
@@ -154,6 +160,7 @@ export function CampaignTable({ rows, lang }: CampaignTableProps) {
               <th className="text-left px-4 py-3 text-xs uppercase tracking-widest font-normal">{t.campaign}</th>
               <th className="text-right px-4 py-3 text-xs uppercase tracking-widest font-normal">{t.spend}</th>
               <th className="text-right px-4 py-3 text-xs uppercase tracking-widest font-normal">{t.interactions}</th>
+              <th className="text-left px-4 py-3 text-xs uppercase tracking-widest font-normal">{t.account}</th>
             </tr>
           </thead>
           <tbody>
