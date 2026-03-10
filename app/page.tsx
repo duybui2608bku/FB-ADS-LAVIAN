@@ -9,7 +9,6 @@ const STORAGE_KEY = "lvian_ads_unlocked"
 export default function Page() {
   const [unlocked, setUnlocked] = React.useState<boolean | null>(null)
 
-  // Read from localStorage after mount (avoids SSR mismatch)
   React.useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY)
     setUnlocked(saved === "1")
@@ -20,7 +19,6 @@ export default function Page() {
     setUnlocked(true)
   }
 
-  // Still loading from storage
   if (unlocked === null) return null
 
   if (!unlocked) {

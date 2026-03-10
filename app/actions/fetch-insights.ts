@@ -64,3 +64,74 @@ export async function fetchInsights({
     return { data: null, error: msg }
   }
 }
+
+
+export async function fetchCampaignStatus(
+  campaign_id: string
+): Promise<{ status: string | null; error: string | null }> {
+  const accessToken = process.env.FB_ACCESS_TOKEN
+
+  if (!accessToken) {
+    return { status: null, error: "FB_ACCESS_TOKEN chưa được cấu hình." }
+  }
+
+  try {
+    const url = `https://graph.facebook.com/v25.0/${campaign_id}?fields=effective_status&access_token=${accessToken}`
+    const res = await fetch(url, { cache: "no-store" })
+    const json = await res.json()
+
+    if (json.error) {
+      throw new Error(json.error.message)
+    }
+
+    return { status: json.effective_status ?? null, error: null }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Unknown error"
+    return { status: null, error: msg }
+  }
+}
+
+export async function changeStatusCampaign({
+  status,
+  campaign_id,
+}: {
+  status: boolean
+  campaign_id: string
+}): Promise<{ data: any | null; error: string | null }> {
+  const accessToken = process.env.FB_ACCESS_TOKEN
+
+  if (!accessToken) {
+    return {
+      data: null,
+      error: "FB_ACCESS_TOKEN chưa được cấu hình trong Environment Variables.",
+    }
+  }
+
+  const newStatus = status ? "ACTIVE" : "PAUSED"
+
+  try {
+    const url = `https://graph.facebook.com/v25.0/${campaign_id}`
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        status: newStatus,
+        access_token: accessToken,
+      }),
+    })
+
+    const json = await res.json()
+
+    if (json.error) {
+      throw new Error(json.error.message)
+    }
+
+    return { data: json, error: null }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Unknown error"
+    return { data: null, error: msg }
+  }
+}

@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { DateRangePicker } from "@/components/date-range-picker"
 import { StatsCards } from "@/components/stats-cards"
 import { PlatformTable } from "@/components/platform-table"
+import { CampaignTable } from "@/components/campaign-table"
 import { fetchInsights, InsightRow } from "@/app/actions/fetch-insights"
 import { processInsights } from "@/lib/process-insights"
 
@@ -20,6 +21,7 @@ const dict = {
     reload: "Tải lại",
     overview: "Tổng quan",
     byPlatform: "Chi tiết theo nền tảng",
+    campaigns: "Chi tiết chiến dịch",
     loading: "Đang tải...",
     errDate: "Vui lòng chọn khoảng ngày.",
   },
@@ -28,6 +30,7 @@ const dict = {
     reload: "Reload",
     overview: "Overview",
     byPlatform: "By platform",
+    campaigns: "Campaign details",
     loading: "Loading...",
     errDate: "Please select a date range.",
   },
@@ -71,7 +74,7 @@ export function Dashboard() {
 
   React.useEffect(() => {
     handleFetch()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   const stats = rows ? processInsights(rows) : null
 
@@ -141,7 +144,10 @@ export function Dashboard() {
               <PlatformTable data={stats.byPlatform} totalSpend={stats.totalSpend} lang={lang} />
             </section>
 
-
+            <section className="space-y-3">
+              <h2 className="text-xs font-sans uppercase tracking-widest text-muted-foreground">{t.campaigns}</h2>
+              <CampaignTable rows={rows ?? []} lang={lang} />
+            </section>
           </>
         )}
 
