@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   title: 'FB Ads Report',
   description: 'Facebook Ads Reporting Dashboard',
   generator: 'v0.app',
+  icons: {
+    icon: '/favicon.png',
+  },
 }
 
 export default function RootLayout({
